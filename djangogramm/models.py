@@ -16,11 +16,11 @@ class User(AbstractUser):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    description = models.CharField(blank=True)
+    description = models.CharField(max_length=255, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='posts')
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
-    comments = models.ManyToManyField(Comment, related_name='comments', blank=True)
+    comments = models.ManyToManyField('Comment', related_name='comments', blank=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
