@@ -1,37 +1,27 @@
 from django.shortcuts import render
 
 
-def register(request):
-    return render(request, 'register.html')
-
-
-def user_login(request):
-    return render(request, 'login.html')
-
-
-def user_logout(request):
-    return render(request, 'logout.html')
-
-
-def view_profile(request):
-    return render(request, 'view_profile.html')
+def view_profile(request, user_id):
+    user = "Alex"
+    posts = "There is my posts"
+    return render(request, 'view_profile.html', {'user': user, 'posts': posts})
 
 
 def edit_profile(request):
     return render(request, 'edit_profile.html')
 
 
-def post_list(request):
-    return render(request, 'post_list.html')
+def post_list(request, posts):
+    return render(request, 'post_list.html', {'posts': posts})
 
 
 def create_new_post(request):
     return render(request, 'create_post.html')
 
 
-def like_post(request):
-    return render(request, 'like_post.html')
+def like_post(request, post_id):
+    return render(request, 'like_post.html', {'post_id': post_id})
 
 
-def add_comment(request):
-    return render(request, 'add_comment.html')
+def add_comment(request, post_id):
+    return render(request, 'add_comment.html', {'post_id': post_id})
