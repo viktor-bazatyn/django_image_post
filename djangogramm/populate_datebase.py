@@ -1,17 +1,15 @@
-import sys
 import os
 import django
 from faker import Faker
 import random
-from django.conf import settings
-from djangogramm.models import User, Post, Comment, Like
-sys.dont_write_bytecode = True
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
-if not settings.configured:
-    settings.configure()
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
+
 django.setup()
+
+from djangogramm.models import User, Post, Comment, Like
+
 fake = Faker()
-# from djangogramm.models import User, Post, Comment, Like
 
 
 def create_user(num_users):
