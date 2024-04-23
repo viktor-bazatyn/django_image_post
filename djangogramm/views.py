@@ -1,6 +1,10 @@
 from django.shortcuts import render
 
 
+def home(request):
+    return render(request, 'home.html')
+
+
 def view_profile(request, user_id):
     user = "Alex"
     posts = "There is my posts"

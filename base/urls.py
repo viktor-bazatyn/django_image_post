@@ -18,7 +18,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from djangogramm import views
+
 urlpatterns = [
+    path('', views.home, name='home'),
     path("admin/", admin.site.urls),
     path("djangogramm/", include('djangogramm.urls'))
 ]

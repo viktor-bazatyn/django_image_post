@@ -1,13 +1,17 @@
+import sys
 import os
 import django
 from faker import Faker
 import random
-from models import User, Post, Comment, Like
-
-fake = Faker()
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
+from django.conf import settings
+from djangogramm.models import User, Post, Comment, Like
+sys.dont_write_bytecode = True
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+if not settings.configured:
+    settings.configure()
 django.setup()
+fake = Faker()
+# from djangogramm.models import User, Post, Comment, Like
 
 
 def create_user(num_users):
@@ -26,7 +30,7 @@ def create_posts(users, num_posts):
     for i in range(num_posts):
         author = random.choice(users)
         description = fake.text(max_nb_chars=100)
-        post = Post(author=author, description=description)
+        post = Post.objects.create(author=author, description=description)
         posts.append(post)
     return posts
 

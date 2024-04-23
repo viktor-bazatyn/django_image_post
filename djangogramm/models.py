@@ -25,7 +25,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=get_image_path)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
-    comments = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='post_comments')
+    comments = models.ForeignKey('Comment', on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
 
@@ -39,6 +39,6 @@ class Like(models.Model):
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.TextField(blank=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post_reference = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)

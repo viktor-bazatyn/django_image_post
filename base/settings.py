@@ -35,11 +35,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "djangogramm",  #активуємо новий створений додаток
+    "djangogramm",
 ]
 
 AUTH_USER_MODEL = "djangogramm.User"
-AUTHENTICATION_BACKENDS = ['djangogramm.backends.EmailBackend']
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
