@@ -21,7 +21,7 @@ from django.urls import path, include
 from djangogramm import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views.main, name='main'),
     path("admin/", admin.site.urls),
     path("djangogramm/", include('djangogramm.urls'))
 ]

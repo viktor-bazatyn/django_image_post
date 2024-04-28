@@ -1,14 +1,11 @@
 from django.shortcuts import render
 
-
-def home(request):
-    return render(request, 'home.html')
+from djangogramm.models import Post
 
 
-def view_profile(request, user_id):
-    user = "Alex"
-    posts = "There is my posts"
-    return render(request, 'view_profile.html', {'user': user, 'posts': posts})
+def main(request):
+    posts = Post.objects.all()
+    return render(request, 'main.html', {'posts': posts})
 
 
 def edit_profile(request):
