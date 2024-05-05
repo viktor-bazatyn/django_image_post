@@ -2,6 +2,7 @@ import os
 import django
 from faker import Faker
 import random
+from django.core.files import File
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
 
@@ -23,12 +24,21 @@ def create_user(num_users):
     return users
 
 
-def create_posts(users, num_posts):
+def get_random_photo_path():
+    photo_folder = "static/images"
+    photo_files = os.listdir(photo_folder)
+    return os.path.join(photo_folder, random.choice(photo_files))
+
+
+def create_posts_with_photos(users, num_posts):
     posts = []
     for i in range(num_posts):
         author = random.choice(users)
         description = fake.text(max_nb_chars=100)
         post = Post.objects.create(author=author, description=description)
+        photo_path = get_random_photo_path()
+        with open(photo_path, 'rb') as photo_file:
+            post.image.save(os.path.basename(photo_path), File(photo_file))
         posts.append(post)
     return posts
 
@@ -56,6 +66,6 @@ def create_likes(users, posts, num_likes):
 
 if __name__ == '__main__':
     users = create_user(1)
-    posts = create_posts(users, 10)
+    posts = create_posts_with_photos(users, 10)
     comments = create_comments(users, posts, 10)
     likes = create_likes(users, posts, 10)

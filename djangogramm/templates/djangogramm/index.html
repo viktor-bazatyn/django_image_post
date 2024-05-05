@@ -5,7 +5,7 @@
     {% for post in posts %}
         <div>
             <h2>{{ post.author.username }}</h2>
-            <p> <a href="#" >{{ post.description }}</a></p>
+            <p> <a href="{% url 'djangogram:post_detail' post.id%}" >{{ post.description }}</a></p>
             {% if post.image %}
                 <img src="{{ post.image.url }}" alt="Post Image">
             {% endif %}
