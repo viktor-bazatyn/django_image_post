@@ -1,10 +1,9 @@
 from django.shortcuts import render
-
 from djangogramm.models import Post
 
 
 def index(request):
-    posts = Post.objects.all()
+    posts = Post.objects.prefetch_related('images').all()
     return render(request, 'djangogramm/index.html', {'posts': posts})
 
 

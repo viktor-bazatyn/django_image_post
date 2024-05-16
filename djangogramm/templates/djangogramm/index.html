@@ -1,15 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Post Feed</h1>
-    {% for post in posts %}
-        <div>
-            <h2>{{ post.author.username }}</h2>
-            <p> <a href="{% url 'djangogram:post_detail' post.id%}" >{{ post.description }}</a></p>
-            {% if post.image %}
-                <img src="{{ post.image.url }}" alt="Post Image">
-            {% endif %}
+    <div class="container">
+        <div class="row">
+            {% for post in posts %}
+                <div class="col-md-7 mx-auto"> 
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            {{ post.author.username }}
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text"><a href="{% url 'djangogram:post_detail' post.id%}">{{ post.description }}</a></p>
+                            {% if post.images.exists %}
+                                    <a href="{{ post.images.first.image.url }}">
+                                        <img class="img-large mx-auto d-block" src="{{ post.images.first.image.url }}" alt="Post Image">
+                                    </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        <hr>
-    {% endfor %}
+    </div>
 {% endblock %}
+
+
