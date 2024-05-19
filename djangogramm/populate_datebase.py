@@ -5,16 +5,17 @@ import django
 from faker import Faker
 import random
 from django.core.files import File
-
+from django.contrib.auth import get_user_model
 from base import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
 
 django.setup()
 
-from djangogramm.models import User, Post, Comment, Like, Image
+from djangogramm.models import Post, Comment, Like, Image
 
 fake = Faker()
+CustomUser = get_user_model()
 
 
 def create_user(num_users):
@@ -23,7 +24,7 @@ def create_user(num_users):
         username = fake.user_name()
         email = fake.email()
         password = 'password'
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = CustomUser.objects.create_user(username=username, email=email, password=password)
         users.append(user)
     return users
 
@@ -33,7 +34,7 @@ def get_random_photo_path(photo_folder: pathlib.Path = settings.MEDIA_ROOT):
     return pathlib.Path(photo_folder) / random.choice(photo_files)
 
 
-def create_posts_with_photos(users: list[User], posts_num: int, max_images_for_post: int = 3) -> list[Post]:
+def create_posts_with_photos(users: list[CustomUser], posts_num: int, max_images_for_post: int = 3) -> list[Post]:
     posts = []
     for i in range(posts_num):
         author = random.choice(users)
@@ -49,7 +50,7 @@ def create_posts_with_photos(users: list[User], posts_num: int, max_images_for_p
     return posts
 
 
-def create_comments(users: list[User], posts: list[Post], comments_num: int) -> list[Comment]:
+def create_comments(users: list[CustomUser], posts: list[Post], comments_num: int) -> list[Comment]:
     comments = []
     for post in posts:
         for _ in range(comments_num):
@@ -60,7 +61,7 @@ def create_comments(users: list[User], posts: list[Post], comments_num: int) -> 
     return comments
 
 
-def create_likes(users: list[User], posts: list[Post], likes_num: int) -> list[Like]:
+def create_likes(users: list[CustomUser], posts: list[Post], likes_num: int) -> list[Like]:
     likes = []
     for post in posts:
         for _ in range(likes_num):
