@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block navbar %}
+    {% include 'include/navbar_for_registration.html' %}
+{% endblock navbar %}
+{% block content %}
+<h2>Register</h2>
+    {% if form.errors %}
+        {{ form.message }}
+    {% endif %}
+<form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Register">
+</form>
+
+<a href="{% url 'login' %}">Back to login</a>
+{% endblock %}

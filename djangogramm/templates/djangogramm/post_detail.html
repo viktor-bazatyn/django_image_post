@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7 mx-auto"> 
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h1>{{ post.author.username }}</h1>
+                    </div>
+                    <div class="card-body">
+                        <h1>{{ post.description }}</h1>
+                        {% for image in post.images.all %}
+                            <a href="{{ image.image.url }}">
+                                <img class="img-post" src="{{ image.image.url }}" alt="Post Image">
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

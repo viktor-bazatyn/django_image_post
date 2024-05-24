@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block navbar %}
+    {% include 'include/navbar_for_registration.html' %}
+{% endblock navbar %}
+{% block content %}
+<h2>Login</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Login">
+</form>
+
+    <a href="{% url 'dashboard' %}">Back to dashboard</a>
+    <br>
+    <a href="{% url 'password_reset' %}">Reset password</a>
+    <br>
+    <a href="{% url 'register' %}">Register</a>
+{% endblock %}

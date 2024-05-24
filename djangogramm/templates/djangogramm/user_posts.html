@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>My Posts</h2>
+{% if posts %}
+    <ul>
+        {% for post in posts %}
+            <li>
+                <p>{{ post.description }}</p>
+                {% for image in post.images.all %}
+                    <img src="{{ image.image.url }}" alt="Post Image">
+                {% endfor %}
+                <p>Posted on: {{ post.created_at }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no posts.</p>
+{% endif %}
+{% endblock %}

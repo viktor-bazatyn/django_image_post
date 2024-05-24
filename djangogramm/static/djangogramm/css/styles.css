@@ -1,0 +1,11 @@
+body {
+    background-color: aliceblue;
+}
+
+.img-large {
+    width: 100%;
+    height: auto;
+}
+.navbar-brand img {
+    width: 100px;
+}
