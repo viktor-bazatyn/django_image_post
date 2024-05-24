@@ -120,6 +120,6 @@ MEDIA_URL = "/media_files/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-LOGIN_REDIRECT_URL = "dashboard:dashboard"
+LOGIN_REDIRECT_URL = "dashboard"
 EMAIL_HOST = "localhost"
 EMAIL_PORT = 1025

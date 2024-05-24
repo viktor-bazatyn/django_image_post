@@ -23,6 +23,6 @@ from django.urls import path, include
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("djangogramm/", include('djangogramm.urls', namespace='djangogram')),
-    path("", include('users.urls', namespace='dashboard')),
+    path("", include('users.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

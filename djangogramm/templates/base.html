@@ -12,14 +12,9 @@
     <link rel="stylesheet" href="{% static 'djangogramm/css/styles.css' %}">
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-light sticky-top" style="background-color: chocolate;">
-    <div class="container-fluid">
-        <a href="/" class="navbar-brand"><img src="/static/djangogramm/image/instagram.png" alt="DjangoGram"></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
+{% block navbar %}
+  {% include 'include/navbar_standart.html' %}
+{% endblock %}
 {% block content %}
 {% endblock content %}
 </body>
