@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
 
 django.setup()
 
-from djangogramm.models import Post, Comment, Like, Image
+from djangogramm.models import Post, Comment, Image
 
 fake = Faker()
 CustomUser = get_user_model()
@@ -61,18 +61,16 @@ def create_comments(users: list[CustomUser], posts: list[Post], comments_num: in
     return comments
 
 
-def create_likes(users: list[CustomUser], posts: list[Post], likes_num: int) -> list[Like]:
-    likes = []
+def create_likes(users: list[CustomUser], posts: list[Post], likes_num: int) -> None:
     for post in posts:
         for _ in range(likes_num):
             user = random.choice(users)
-            like = Like.objects.create(post=post, user=user)
-            likes.append(like)
-    return likes
+            if user not in post.likes.all():
+                post.likes.add(user)
 
 
 if __name__ == '__main__':
     users = create_user(5)
     posts = create_posts_with_photos(users, 10)
     comments = create_comments(users, posts, 10)
-    likes = create_likes(users, posts, 10)
+    create_likes(users, posts, likes_num=10)
