@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     volumes:
-      - postgres_data: ${PGDATA}
+      - /var/lib/postgresql/data/pgdata
     ports:
       - "5433:5432"
 
