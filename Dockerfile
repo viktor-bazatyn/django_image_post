@@ -1,15 +1,8 @@
 FROM python:3.11-slim-buster
 LABEL authors="Viktor"
 
-ARG UID=1000
-ARG GID=1000
-ENV UID=${UID}
-ENV GID=${GID}
 
-RUN useradd -m -u $UID django_user
-USER django_user
-
-WORKDIR /home/django_user/app
+WORKDIR /home/app
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
@@ -20,4 +13,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "127.0.0.1:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
