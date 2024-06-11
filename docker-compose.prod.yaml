@@ -12,7 +12,7 @@ services:
         sh -c "
               python manage.py makemigrations &&
               python manage.py migrate &&
-              gunicorn --bind 0.0.0.0:8000 base.wsgi
+              gunicorn --bind 0.0.0.0:8001 base.wsgi
               "
 
   bot_db:
@@ -33,7 +33,7 @@ services:
       - 80:80
     command: [ nginx-debug, '-g', 'daemon off;' ]
     depends_on:
-      - api
+      - djangogram
 
 volumes:
   postgres_data:
