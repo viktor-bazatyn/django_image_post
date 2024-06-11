@@ -2,12 +2,12 @@ services:
   djangogram:
     build:
       context: .
-      env_file:
-        - .env
-      depends_on:
-        - bot_db
-      ports:
-        - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - bot_db
+    ports:
+      - "8001:8001"
     command: >
       sh -c "
             python manage.py makemigrations &&
