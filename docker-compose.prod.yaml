@@ -12,7 +12,6 @@ services:
       sh -c "
             python manage.py makemigrations &&
             python manage.py migrate &&
-            python manage.py initiate_admin &&
             python manage.py collectstatic &&
             gunicorn --bind 0.0.0.0:8000 base.wsgi
             "
