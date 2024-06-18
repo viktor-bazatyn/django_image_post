@@ -1,4 +1,14 @@
 services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    command: [ "nginx-debug", "-g", "daemon off;" ]
+    depends_on:
+      - djangogram
+
   djangogram:
     build:
       context: .
@@ -27,14 +37,6 @@ services:
         target: /var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  nginx:
-    build: ./nginx
-    ports:
-      - 80:80
-    command: [ nginx-debug, '-g', 'daemon off;' ]
-    depends_on:
-      - djangogram
 
 volumes:
   postgres_data:
