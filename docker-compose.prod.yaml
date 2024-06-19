@@ -8,11 +8,13 @@ services:
       - bot_db
     ports:
       - "8000:8000"
+    volumes:
+      - static_volume:/home/app/static
+      - media_volume:/home/app/media_files
     command: >
       sh -c "
             python manage.py makemigrations &&
             python manage.py migrate &&
-            python manage.py collectstatic &&
             gunicorn --bind 0.0.0.0:8000 base.wsgi
             "
 
@@ -29,14 +31,17 @@ services:
       - "5432:5432"
 
   nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    build: ./nginx
     ports:
       - 80:80
+    volumes:
+      - static_volume:/home/app/static
+      - media_volume:/home/app/media_files
     command: [ "nginx-debug", '-g', 'daemon off;' ]
     depends_on:
       - djangogram
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
