@@ -9,7 +9,7 @@ services:
         source: postgres_data
         target: /var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
 
   pgadmin:
     container_name: pgadmin_container
