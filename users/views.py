@@ -26,7 +26,6 @@ def register(request):
 
 def add_avatar(request):
     if request.method == "POST":
-        avatar_form = AvatarForm(request.POST, request.FILES)
         if request.method == "POST":
             form = AvatarForm(request.POST, request.FILES, instance=request.user)
             if form.is_valid():

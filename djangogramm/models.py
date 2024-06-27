@@ -7,13 +7,11 @@ from faker.utils.text import slugify
 from users.models import CustomUser
 
 
-def get_image_path(instance: 'Post', file: str, images_folder=None) -> str:
-    if images_folder is None:
-        images_folder = settings.MEDIA_ROOT
-    post_id = instance.id
-    path = pathlib.Path(file)
+def get_image_path(instance, filename):
+    post_id = instance.post.id if instance.post else uuid.uuid4()
+    path = pathlib.Path(filename)
     file_name_normalize = slugify(path.stem)
-    return f"{images_folder}/{post_id}_{file_name_normalize}{path.suffix}"
+    return f"{post_id}_{file_name_normalize}{path.suffix}"
 
 
 class Post(models.Model):
