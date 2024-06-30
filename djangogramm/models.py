@@ -7,13 +7,11 @@ from faker.utils.text import slugify
 from users.models import CustomUser
 
 
-def get_image_path(instance: 'Post', file: str, images_folder=None) -> str:
-    if images_folder is None:
-        images_folder = settings.MEDIA_ROOT
-    post_id = instance.id
-    path = pathlib.Path(file)
+def get_image_path(instance, filename):
+    post_id = instance.post.id if instance.post else uuid.uuid4()
+    path = pathlib.Path(filename)
     file_name_normalize = slugify(path.stem)
-    return f"{images_folder}/{post_id}_{file_name_normalize}{path.suffix}"
+    return f"{post_id}_{file_name_normalize}{path.suffix}"
 
 
 class Post(models.Model):
@@ -29,13 +27,6 @@ class Image(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to=get_image_path, null=True)
-
-
-class Like(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now)
 
 
 class Comment(models.Model):
