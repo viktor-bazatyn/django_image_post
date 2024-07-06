@@ -1,27 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-Hello, {{ user.username|default:'Guest' }}!
-    <div>
-        {% if user.is_authenticated %}
-            {% if user.avatar %}
-                <img src="{{ user.avatar.url }}" alt="Аватарка користувача">
-                <br>
-                <a href="{% url 'add_avatar' %}">Change photo</a>
+<div class="mt-5">
+    <h1 class="text-center">Hello, {{ user.username|default:'Guest' }}!</h1>
+    <div class="card mt-3">
+        <div class="card-body text-center">
+            {% if user.is_authenticated %}
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="User Avatar" class="img-thumbnail rounded-circle" width="150">
+                    <br>
+                    <a href="{% url 'add_avatar' %}" class="btn btn-primary mt-2">Change photo</a>
+                {% else %}
+                    <p class="mt-2">User does not have an avatar</p>
+                    <a href="{% url 'add_avatar' %}" class="btn btn-primary mt-2">Add photo</a>
+                {% endif %}
+                <div class="mt-3">
+                    <a href="{% url 'djangoinsta:user_posts' %}" class="btn btn-secondary">My posts</a>
+                    <a href="{% url 'djangoinsta:create_post' %}" class="btn btn-success">Create post</a>
+                    <a href="{% url 'password_change' %}" class="btn btn-warning">Change password</a>
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'djangoinsta:subscribers_list' user.username %}" class="btn btn-info">
+                        Subscribers: {{ subscriber_count }}
+                    </a>
+                    <a href="{% url 'djangoinsta:subscriptions_list' user.username %}" class="btn btn-info">
+                        Subscriptions: {{ subscription_count }}
+                    </a>
+                </div>
             {% else %}
-                <p>Користувач не має аватарки</p>
-                <a href="{% url 'add_avatar' %}">Add photo</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
             {% endif %}
-            <br>
-            <a href="{% url 'djangoinsta:user_posts' %}">My post</a>
-            <br>
-            <a href="{% url 'djangoinsta:create_post' %}">Create post</a>
-            <br>
-            <a href="{% url 'password_change' %}">Change password</a>
-            <br>
-            <a href="{% url 'logouts' %}">Logout</a>
-        {% else %}
-            <a href="{% url 'login' %}">Login</a>
-        {% endif %}
+        </div>
     </div>
+</div>
 {% endblock %}
+
+

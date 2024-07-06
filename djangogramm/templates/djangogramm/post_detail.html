@@ -2,7 +2,7 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-md-7 mx-auto"> 
+            <div class="col-md-7 mx-auto">
                 <div class="card mb-4">
                     <div class="card-header">
                         <h1>{{ post.author.username }}</h1>
@@ -14,6 +14,16 @@
                                 <img class="img-post" src="{{ image.image.url }}" alt="Post Image">
                             </a>
                         {% endfor %}
+                    <div>
+                        <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
+                            {% csrf_token %}
+                            {% if post.is_liked_by_user %}
+                                <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                            {% else %}
+                                <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                            {% endif %}
+                        </form>
+                        <span>{{ post.likes.count }} likes</span>
                     </div>
                 </div>
             </div>

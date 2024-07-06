@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Subscriptions of {{ user_profile.username }}</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for subscription in subscriptions %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ subscription.subscribed_to.username }}</span>
+                                    <span class="text-muted">{{ subscription.subscribed_to.email }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

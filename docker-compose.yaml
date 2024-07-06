@@ -1,39 +1,39 @@
-services:
-  bot_db:
-    container_name: postgres_container
-    image: postgres:latest
-    env_file:
-      - .env
-    volumes:
-      - type: volume
-        source: postgres_data
-        target: /var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4
-    restart: on-failure
-    env_file:
-      - .env
-    ports:
-      - "5050:80"
-    volumes:
-      - type: volume
-        source: pgadmin_data
-        target: /var/lib/pgadmin
-
-  djangogram:
-    build:
-      context: .
-    env_file:
-      - .env
-    depends_on:
-      - bot_db
-    ports:
-      - "8000:8000"
-
-volumes:
-  postgres_data:
-  pgadmin_data:
+#services:
+#  bot_db:
+#    container_name: postgres_container
+#    image: postgres:latest
+#    env_file:
+#      - .env
+#    volumes:
+#      - type: volume
+#        source: postgres_data
+#        target: /var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#
+#  pgadmin:
+#    container_name: pgadmin_container
+#    image: dpage/pgadmin4
+#    restart: on-failure
+#    env_file:
+#      - .env
+#    ports:
+#      - "5050:80"
+#    volumes:
+#      - type: volume
+#        source: pgadmin_data
+#        target: /var/lib/pgadmin
+#
+#  djangogram:
+#    build:
+#      context: .
+#    env_file:
+#      - .env
+#    depends_on:
+#      - bot_db
+#    ports:
+#      - "8000:8000"
+#
+#volumes:
+#  postgres_data:
+#  pgadmin_data:

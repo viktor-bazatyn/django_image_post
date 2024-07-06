@@ -9,3 +9,18 @@ body {
 .navbar-brand img {
     width: 100px;
 }
+
+.button-container {
+  text-align: center;
+}
+
+.button-container a {
+  margin: 10px;
+  display: inline-block;
+}
+
+.rounded-avatar {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+}
