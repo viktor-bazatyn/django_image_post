@@ -6,13 +6,26 @@ from djangogramm.models import Post, Subscriber
 
 
 def dashboard(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     user = request.user
-    posts = Post.objects.filter(author=user)
+
+    # Отримати всі пости користувача
+    user_posts = Post.objects.filter(author=user)
+
+    # Отримати пости підписників
+    subscribers = Subscriber.objects.filter(user=user).values_list('subscribed_to', flat=True)
+    subscriber_posts = Post.objects.filter(author__in=subscribers)
+
+    # Об'єднати пости
+    posts = user_posts | subscriber_posts
+
+    # Додати атрибут is_liked_by_user до кожного поста
+    for post in posts:
+        post.is_liked_by_user = post.is_liked_by(user)
+
+    # Обчислити кількість підписників і підписок
     subscriber_count = Subscriber.objects.filter(subscribed_to=user).count()
     subscription_count = Subscriber.objects.filter(user=user).count()
+
     return render(request, "users/dashboard.html", {
         'user': user,
         'posts': posts,

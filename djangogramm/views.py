@@ -58,7 +58,7 @@ def create_post(request):
                 image.post = post
                 image.save()
 
-            return redirect('djangoinsta:user_posts')
+            return redirect('dashboard')
     else:
         post_form = PostForm()
         image_form = ImageForm()

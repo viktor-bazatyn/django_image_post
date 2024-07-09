@@ -6,7 +6,8 @@
             {% for post in posts %}
                 <div class="col-md-7 mx-auto"> 
                     <div class="card mb-4">
-                        <div class="card-header">
+                        <div class="card-header d-flex align-items-center">
+                            <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                             {% if post.author == user %}
                                 <a href="{% url 'dashboard' %}">{{ post.author.username }}</a>
                             {% else %}
@@ -20,7 +21,7 @@
                                     <img class="img-large mx-auto d-block" src="{{ post.images.first.image.url }}" alt="Post Image">
                                 </a>
                             {% endif %}
-                            <div>
+                            <div class="mt-2">
                                 <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
                                     {% csrf_token %}
                                     {% if post.is_liked_by_user %}
@@ -38,9 +39,3 @@
         </div>
     </div>
 {% endblock %}
-
-
-
-
-
-

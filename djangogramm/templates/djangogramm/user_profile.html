@@ -3,59 +3,75 @@
 {% load static %}
 
 {% block content %}
-    <div class="container">
-        <div class="profile-header text-center mb-4">
-            {% if user_profile.avatar %}
-                <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.username }}'s avatar" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
-            {% else %}
-                <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
-            {% endif %}
-            <h1>{{ user_profile.username }}</h1>
-            {% if user_profile.biography %}
-                <p>{{ user_profile.biography }}</p>
-            {% endif %}
-            <div class="profile-stats mt-4">
-                <a href="{% url 'djangoinsta:subscribers_list' user_profile.username %}">Subscribers: {{ subscriber_count }}</a>
-                <br>
-                <a href="{% url 'djangoinsta:subscriptions_list' user_profile.username %}">Subscriptions: {{ subscription_count }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Profile Info -->
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    {% if user_profile.avatar %}
+                        <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.username }}'s avatar" class="img-thumbnail rounded-circle mb-3" width="150">
+                    {% else %}
+                        <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mb-3" width="150">
+                    {% endif %}
+                    <h2>{{ user_profile.username }}</h2>
+                    {% if user_profile.biography %}
+                        <p>{{ user_profile.biography }}</p>
+                    {% endif %}
+                    {% if user_profile != request.user %}
+                        {% if is_subscribed %}
+                            <a href="{% url 'djangoinsta:unsubscribe' user_profile.username %}" class="btn btn-warning btn-sm">Unsubscribe</a>
+                        {% else %}
+                            <a href="{% url 'djangoinsta:subscribe' user_profile.username %}" class="btn btn-success btn-sm">Subscribe</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
-            {% if user_profile != request.user %}
-                {% if is_subscribed %}
-                    <a href="{% url 'djangoinsta:unsubscribe' user_profile.username %}" class="btn btn-danger">Unsubscribe</a>
-                {% else %}
-                    <a href="{% url 'djangoinsta:subscribe' user_profile.username %}" class="btn btn-primary">Subscribe</a>
-                {% endif %}
-            {% endif %}
-        </div>
-        <div class="row">
-            {% for post in posts %}
-                <div class="col-md-7 mx-auto">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            {{ post.author.username }}
+            <!-- Profile Stats -->
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <a href="{% url 'djangoinsta:subscribers_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">Subscribers<p class="mb-0" style="font-size: 0.5rem;">{{ subscriber_count }}</p></a>
                         </div>
-                        <div class="card-body">
-                            <p class="card-text"><a href="{% url 'djangoinsta:post_detail' post.id %}">{{ post.description }}</a></p>
-                            {% if post.images.exists %}
-                                <a href="{{ post.images.first.image.url }}">
-                                    <img class="img-large mx-auto d-block" src="{{ post.images.first.image.url }}" alt="Post Image">
-                                </a>
-                            {% endif %}
-                            <div>
-                                <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
-                                    {% csrf_token %}
-                                    {% if post.is_liked_by_user %}
-                                        <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
-                                    {% else %}
-                                        <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
-                                    {% endif %}
-                                </form>
-                                <span>{{ post.likes.count }} likes</span>
-                            </div>
+                        <div>
+                            <a href="{% url 'djangoinsta:subscriptions_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">Subscriptions<p class="mb-0" style="font-size: 0.5rem;">{{ subscription_count }}</p></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <!-- Posts -->
+            {% for post in posts %}
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center">
+                        <img src="{{ post.author.avatar.url }}" alt="Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                        <strong>{{ post.author.username }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ post.description }}</p>
+                        {% if post.images.exists %}
+                            <img src="{{ post.images.first.image.url }}" alt="Post Image" class="img-fluid mb-2">
+                        {% endif %}
+                        <div class="mt-2">
+                            <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
+                                {% csrf_token %}
+                                {% if post.is_liked_by_user %}
+                                    <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                                {% else %}
+                                    <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                                {% endif %}
+                            </form>
+                            <span>{{ post.likes.count }} likes</span>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
+</div>
 {% endblock %}
