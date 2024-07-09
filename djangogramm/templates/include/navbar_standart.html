@@ -1,0 +1,30 @@
+{% load static %}
+<nav class="navbar navbar-expand-md navbar-light sticky-top" style="background-color: chocolate;">
+    <div class="container-fluid">
+        <a href="/djangogramm/" class="navbar-brand">
+            <img src="{% static 'djangogramm/image/instagram.png' %}" alt="DjangoGram">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item me-2">
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Home</a>
+                </li>
+                <li class="nav-item me-2">
+                    <a href="{% url 'logouts' %}" class="btn btn-secondary">Вийти</a>
+                </li>
+                {% else %}    
+                <li class="nav-item me-2">
+                    <a href="{% url 'register' %}" class="btn btn-secondary">Зареєструватись</a>
+                </li>
+                <li class="nav-item me-2">
+                    <a href="{% url 'login' %}" class="btn btn-secondary">Увійти</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
