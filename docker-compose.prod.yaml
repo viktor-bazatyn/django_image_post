@@ -1,48 +1,48 @@
-#services:
-#  djangogram:
-#    build:
-#      context: .
-#    env_file:
-#      - .env
-#    depends_on:
-#      - bot_db
-#    ports:
-#      - "8000:8000"
-#    volumes:
-#      - static_volume:/home/app/static
-#      - media_volume:/home/app/media_files
-#    command: >
-#      sh -c "
-#            python manage.py makemigrations &&
-#            python manage.py migrate &&
-#            python manage.py collectstatic --noinput &&
-#            gunicorn --bind 0.0.0.0:8000 base.wsgi:application
-#            "
-#
-#  bot_db:
-#    container_name: postgres_container
-#    image: postgres:latest
-#    env_file:
-#      - .env
-#    volumes:
-#      - type: volume
-#        source: postgres_data
-#        target: /var/lib/postgresql/data
-#    ports:
-#      - "5432:5432"
-#
-#  nginx:
-#    build: ./nginx
-#    ports:
-#      - 80:80
-#    volumes:
-#      - static_volume:/home/app/static
-#      - media_volume:/home/app/media_files
-#    command: [ "nginx-debug", '-g', 'daemon off;' ]
-#    depends_on:
-#      - djangogram
-#
-#volumes:
-#  postgres_data:
-#  static_volume:
-#  media_volume:
+services:
+  djangogram:
+    build:
+      context: .
+    env_file:
+      - .env
+    depends_on:
+      - bot_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/home/app/static
+      - media_volume:/home/app/media_files
+    command: >
+      sh -c "
+            python manage.py makemigrations &&
+            python manage.py migrate &&
+            python manage.py collectstatic --noinput &&
+            gunicorn --bind 0.0.0.0:8000 base.wsgi:application
+            "
+
+  bot_db:
+    container_name: postgres_container
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    volumes:
+      - static_volume:/home/app/static
+      - media_volume:/home/app/media_files
+    command: [ "nginx-debug", '-g', 'daemon off;' ]
+    depends_on:
+      - djangogram
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
