@@ -1,6 +1,5 @@
 import pathlib
 import uuid
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from faker.utils.text import slugify
@@ -22,11 +21,20 @@ class Post(models.Model):
     comments = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
+    def like(self, user):
+        self.likes.add(user)
+
+    def unlike(self, user):
+        self.likes.remove(user)
+
+    def is_liked_by(self, user):
+        return self.likes.filter(id=user.id).exists()
+
 
 class Image(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to=get_image_path, null=True)
+    image = models.ImageField(upload_to=get_image_path, blank=True, null=True)
 
 
 class Comment(models.Model):
@@ -34,4 +42,11 @@ class Comment(models.Model):
     text = models.TextField(max_length=255)
     post_reference = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+
+
+class Subscriber(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='subscriptions')
+    subscribed_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='subscribers')
     created_at = models.DateTimeField(default=timezone.now)

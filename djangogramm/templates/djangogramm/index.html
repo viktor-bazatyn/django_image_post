@@ -6,16 +6,32 @@
             {% for post in posts %}
                 <div class="col-md-7 mx-auto"> 
                     <div class="card mb-4">
-                        <div class="card-header">
-                            {{ post.author.username }}
+                        <div class="card-header d-flex align-items-center">
+                            <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                            {% if post.author == user %}
+                                <a href="{% url 'dashboard' %}">{{ post.author.username }}</a>
+                            {% else %}
+                                <a href="{% url 'djangoinsta:user_profile' post.author.username %}">{{ post.author.username }}</a>
+                            {% endif %}
                         </div>
                         <div class="card-body">
-                            <p class="card-text"><a href="{% url 'djangoinsta:post_detail' post.id%}">{{ post.description }}</a></p>
+                            <p class="card-text"><a href="{% url 'djangoinsta:post_detail' post.id %}">{{ post.description }}</a></p>
                             {% if post.images.exists %}
-                                    <a href="{{ post.images.first.image.url }}">
-                                        <img class="img-large mx-auto d-block" src="{{ post.images.first.image.url }}" alt="Post Image">
-                                    </a>
+                                <a href="{{ post.images.first.image.url }}">
+                                    <img class="img-large mx-auto d-block" src="{{ post.images.first.image.url }}" alt="Post Image">
+                                </a>
                             {% endif %}
+                            <div class="mt-2">
+                                <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
+                                    {% csrf_token %}
+                                    {% if post.is_liked_by_user %}
+                                        <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                                    {% else %}
+                                        <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                                    {% endif %}
+                                </form>
+                                <span>{{ post.likes.count }} likes</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -23,5 +39,3 @@
         </div>
     </div>
 {% endblock %}
-
-
