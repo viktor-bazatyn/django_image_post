@@ -12,5 +12,5 @@ def get_avatar_path(instance, filename):
 class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     biography = models.TextField(null=True)
-    avatar = models.ImageField(upload_to=get_avatar_path, null=True)
+    avatar = models.ImageField(upload_to=get_avatar_path, null=True, blank=True)
     email = models.EmailField(unique=True)
