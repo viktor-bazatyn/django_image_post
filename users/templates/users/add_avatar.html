@@ -1,10 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>Add or update your photo</p>
-        <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ avatar_form.as_p }}
-        <button type="submit">Upload Avatar</button>
-        </form>
+<div class="mt-5">
+    <h1 class="text-center">Update Your Avatar</h1>
+    <div class="card mt-3">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="text-center">
+                    <div class="form-group mb-3">
+                        <p>Add or update your photo</p>
+                        {{ avatar_form.as_p }}
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-success">Upload Avatar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

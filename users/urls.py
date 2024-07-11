@@ -30,4 +30,5 @@ urlpatterns = [
          name='password_change_done'),
     path("logouts/", auth_views.LogoutView.as_view(template_name="registration/account_logged.html"), name="logouts"),
     path("add_avatar/", views.add_avatar, name="add_avatar"),
+    path('subscribe/<uuid:user_id>/', views.subscribe, name='subscribe'),
 ]

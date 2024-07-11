@@ -12,19 +12,21 @@
             <!-- Profile Info -->
             <div class="card mb-3">
                 <div class="card-body text-center">
-                    {% if user.is_authenticated %}
-                        <h2>{{ user.username }}</h2>
-                        {% if user.avatar %}
-                            <img src="{{ user.avatar.url }}" alt="User Avatar" class="img-thumbnail rounded-circle mb-3" width="150">
-                            <br>
-                            <a href="{% url 'add_avatar' %}" class="btn btn-warning btn-sm">Change photo</a>
+                    {% if user_profile.avatar %}
+                        <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.username }}'s avatar" class="img-thumbnail rounded-circle mb-3" width="150">
+                    {% else %}
+                        <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mb-3" width="150">
+                    {% endif %}
+                    <h2>{{ user_profile.username }}</h2>
+                    {% if user_profile.biography %}
+                        <p>{{ user_profile.biography }}</p>
+                    {% endif %}
+                    {% if user_profile != request.user %}
+                        {% if is_subscribed %}
+                            <a href="{% url 'djangoinsta:unsubscribe' user_profile.username %}" class="btn btn-warning btn-sm">Unsubscribe</a>
                         {% else %}
-                            <p>User does not have an avatar</p>
-                            <a href="{% url 'add_avatar' %}" class="btn btn-success btn-sm">Add photo</a>
+                            <a href="{% url 'djangoinsta:subscribe' user_profile.username %}" class="btn btn-success btn-sm">Subscribe</a>
                         {% endif %}
-                        <p>{{ user.bio }}</p>
-                        <a href="{% url 'password_change' %}" class="btn btn-warning btn-sm">Change password</a>
-                        <a href="{% url 'djangoinsta:create_post' %}" class="btn btn-warning btn-sm">Create post</a>
                     {% endif %}
                 </div>
             </div>
@@ -33,16 +35,10 @@
                 <div class="card-body text-center">
                     <div class="d-flex justify-content-around">
                         <div>
-                            <a href="{% url 'djangoinsta:subscribers_list' user.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">
-                                Subscribers
-                                <p class="mb-0" style="font-size: 0.5rem;">{{ subscriber_count }}</p>
-                            </a>
+                            <a href="{% url 'djangoinsta:subscribers_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">Subscribers<p class="mb-0" style="font-size: 0.5rem;">{{ subscriber_count }}</p></a>
                         </div>
                         <div>
-                            <a href="{% url 'djangoinsta:subscriptions_list' user.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">
-                                Subscriptions
-                                <p class="mb-0" style="font-size: 0.5rem;">{{ subscription_count }}</p>
-                            </a>
+                            <a href="{% url 'djangoinsta:subscriptions_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">Subscriptions<p class="mb-0" style="font-size: 0.5rem;">{{ subscription_count }}</p></a>
                         </div>
                     </div>
                 </div>

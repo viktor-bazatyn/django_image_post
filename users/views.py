@@ -1,11 +1,27 @@
 from django.contrib.auth import login
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from users.forms import CustomUserCreationForm, AvatarForm
 from .models import CustomUser
+from djangogramm.models import Post, Subscriber
+
 
 def dashboard(request):
-    avatars = CustomUser.objects.filter
-    return render(request, "users/dashboard.html", {'avatars': avatars})
+    user = request.user
+    user_posts = Post.objects.filter(author=user)
+    subscribers = Subscriber.objects.filter(user=user).values_list('subscribed_to', flat=True)
+    subscriber_posts = Post.objects.filter(author__in=subscribers)
+    posts = user_posts | subscriber_posts
+    for post in posts:
+        post.is_liked_by_user = post.is_liked_by(user)
+    subscriber_count = Subscriber.objects.filter(subscribed_to=user).count()
+    subscription_count = Subscriber.objects.filter(user=user).count()
+
+    return render(request, "users/dashboard.html", {
+        'user': user,
+        'posts': posts,
+        'subscriber_count': subscriber_count,
+        'subscription_count': subscription_count,
+    })
 
 
 def register(request):
@@ -36,3 +52,10 @@ def add_avatar(request):
     else:
         avatar_form = AvatarForm()
     return render(request, "users/add_avatar.html", {"avatar_form": avatar_form})
+
+
+def subscribe(request, user_id):
+    user_to_subscribe = get_object_or_404(CustomUser, id=user_id)
+    if not Subscriber.objects.filter(user=request.user, subscribed_to=user_to_subscribe).exists():
+        Subscriber.objects.create(user=request.user, subscribed_to=user_to_subscribe)
+    return redirect('dashboard')
