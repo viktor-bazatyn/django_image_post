@@ -2,9 +2,9 @@
 {% load static %}
 {% block content %}
     <div class="container">
-        <div class="row">
+        <div class="row" id="post-container">
             {% for post in posts %}
-                <div class="col-md-7 mx-auto"> 
+                <div class="col-md-7 mx-auto post">
                     <div class="card mb-4">
                         <div class="card-header d-flex align-items-center">
                             {% if post.author.avatar %}
@@ -41,5 +41,36 @@
                 </div>
             {% endfor %}
         </div>
+        <div class="row">
+            <div class="col-md-7 mx-auto text-center">
+                <button id="load-more" class="btn btn-primary">Load More</button>
+            </div>
+        </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            let page = 1;
+
+            $("#load-more").click(function() {
+                page += 1;
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "djangoinsta:load_posts" %}',
+                    data: {
+                        'page': page
+                    },
+                    success: function(data) {
+                        $("#post-container").append(data);
+                        $("#load-more").remove();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading more posts:', error);
+                    }
+                });
+            });
+        });
+
+    </script>
 {% endblock %}
