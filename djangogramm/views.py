@@ -1,21 +1,48 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.http import HttpResponse, JsonResponse
 from djangogramm.forms import PostForm, ImageForm
 from djangogramm.models import Post, Subscriber
 from users.models import CustomUser
+from django.template.loader import render_to_string
+from django.core.paginator import Paginator
 
 
 def index(request):
     user = request.user
-    posts = Post.objects.all()
+    posts = Post.objects.all().order_by('-created_at')
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
-    for post in posts:
+    for post in page_obj:
         post.is_liked_by_user = post.is_liked_by(user)
 
     return render(request, "djangogramm/index.html", {
         'user': user,
-        'posts': posts,
+        'posts': page_obj,
     })
+
+
+def load_posts(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        page_number = int(request.GET.get('page', 1))
+        posts = Post.objects.all().order_by('-created_at')
+        paginator = Paginator(posts, 10)
+        page_obj = paginator.get_page(page_number)
+
+        for post in page_obj:
+            post.is_liked_by_user = post.is_liked_by(request.user)
+
+        has_more = page_obj.has_next()
+
+        html = render_to_string('djangogramm/posts.html', {'posts': page_obj, 'user': request.user})
+        if has_more:
+            load_more_button = '<div class="col-md-7 mx-auto text-center"><button id="load-more" class="btn btn-primary">Load More</button></div>'
+            html += load_more_button
+
+        return HttpResponse(html)
+
+    return HttpResponse('Invalid request', status=400)
 
 
 def like_unlike_post(request, post_id):
