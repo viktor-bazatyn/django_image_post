@@ -41,11 +41,13 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="row">
-            <div class="col-md-7 mx-auto text-center">
-                <button id="load-more" class="btn btn-primary">Load More</button>
+        {% if posts.has_next %}
+            <div class="row" id="load-more-container">
+                <div class="col-md-7 mx-auto text-center">
+                    <button id="load-more" class="btn btn-primary">Load More</button>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -53,7 +55,7 @@
         $(document).ready(function() {
             let page = 1;
 
-            $("#load-more").click(function() {
+            $(document).on('click', '#load-more', function() {
                 page += 1;
                 $.ajax({
                     type: 'GET',
@@ -62,8 +64,8 @@
                         'page': page
                     },
                     success: function(data) {
+                        $('#load-more-container').remove();
                         $("#post-container").append(data);
-                        $("#load-more").remove();
                     },
                     error: function(xhr, status, error) {
                         console.error('Error loading more posts:', error);
@@ -71,6 +73,5 @@
                 });
             });
         });
-
     </script>
 {% endblock %}

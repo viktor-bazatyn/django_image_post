@@ -5,6 +5,8 @@ from djangogramm.models import Post, Subscriber
 from users.models import CustomUser
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 
 def index(request):
@@ -33,11 +35,9 @@ def load_posts(request):
         for post in page_obj:
             post.is_liked_by_user = post.is_liked_by(request.user)
 
-        has_more = page_obj.has_next()
-
         html = render_to_string('djangogramm/posts.html', {'posts': page_obj, 'user': request.user})
-        if has_more:
-            load_more_button = '<div class="col-md-7 mx-auto text-center"><button id="load-more" class="btn btn-primary">Load More</button></div>'
+        if page_obj.has_next():
+            load_more_button = '<div class="row" id="load-more-container"><div class="col-md-7 mx-auto text-center"><button id="load-more" class="btn btn-primary">Load More</button></div></div>'
             html += load_more_button
 
         return HttpResponse(html)
@@ -48,6 +48,9 @@ def load_posts(request):
 def like_unlike_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     user = request.user
+
+    if not user.is_authenticated:
+        return redirect(f'{reverse("login")}?next={request.path}')
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -70,6 +73,7 @@ def post_detail(request, post_id):
     })
 
 
+@login_required
 def create_post(request):
     if request.method == 'POST':
         post_form = PostForm(request.POST)
@@ -129,6 +133,7 @@ def user_profile(request, username):
     })
 
 
+@login_required
 def subscribe(request, username):
     user_to_subscribe = get_object_or_404(CustomUser, username=username)
     if user_to_subscribe != request.user:
@@ -137,6 +142,7 @@ def subscribe(request, username):
     return redirect('djangoinsta:user_profile', username=username)
 
 
+@login_required
 def unsubscribe(request, username):
     user_to_unsubscribe = get_object_or_404(CustomUser, username=username)
     Subscriber.objects.filter(user=request.user, subscribed_to=user_to_unsubscribe).delete()
