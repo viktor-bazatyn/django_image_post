@@ -118,12 +118,17 @@ def subscriptions_list(request, username):
 
 def user_profile(request, username):
     user_profile = get_object_or_404(CustomUser, username=username)
+    if not request.user.is_authenticated:
+        return redirect(f'{reverse("login")}?next={request.path}')
+
     posts = Post.objects.filter(author=user_profile)
     for post in posts:
         post.is_liked_by_user = post.is_liked_by(request.user)
+
     subscriber_count = Subscriber.objects.filter(subscribed_to=user_profile).count()
     subscription_count = Subscriber.objects.filter(user=user_profile).count()
     is_subscribed = Subscriber.objects.filter(user=request.user, subscribed_to=user_profile).exists()
+
     return render(request, "djangogramm/user_profile.html", {
         'user_profile': user_profile,
         'posts': posts,
