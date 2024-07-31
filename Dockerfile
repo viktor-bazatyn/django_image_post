@@ -3,7 +3,6 @@ LABEL authors="Viktor"
 
 
 WORKDIR /home/app
-
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
 COPY requirements.txt ./

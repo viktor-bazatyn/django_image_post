@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    {% include 'include/navbar_for_registration.html' %}
+{% endblock navbar %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="text-center">Welcome to Djangogramm!</h1>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p class="text-center">We are glad to have you here. You can log in using your existing account or register a new one.</p>
+            <div class="text-center mt-3">
+                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary">Register</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

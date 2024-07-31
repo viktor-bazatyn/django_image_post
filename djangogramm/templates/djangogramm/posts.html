@@ -8,14 +8,10 @@
                 {% else %}
                     <img src="{% static 'default_avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                 {% endif %}
-                {% if post.author.username %}
-                    {% if post.author == user %}
-                        <a href="{% url 'dashboard' %}">{{ post.author.username }}</a>
-                    {% else %}
-                        <a href="{% url 'djangoinsta:user_profile' post.author.username %}">{{ post.author.username }}</a>
-                    {% endif %}
+                {% if post.author == user %}
+                    <a href="{% url 'dashboard' %}">{{ post.author.username }}</a>
                 {% else %}
-                    <span>Unknown User</span>
+                    <a href="{% url 'djangoinsta:user_profile' post.author.username %}">{{ post.author.username }}</a>
                 {% endif %}
             </div>
             <div class="card-body">
@@ -40,4 +36,3 @@
         </div>
     </div>
 {% endfor %}
-
