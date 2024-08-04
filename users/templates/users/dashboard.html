@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
-
 {% load static %}
-
 {% block content %}
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
 <div class="container">
     <div class="row">
         <div class="col-md-4">
@@ -14,12 +12,13 @@
                 <div class="card-body text-center">
                     {% if user.is_authenticated %}
                         <h2>{{ user.username }}</h2>
-                        {% if user.avatar and user.avatar.url %}
+                        {% if user.avatar %}
                             <img src="{{ user.avatar.url }}" alt="User Avatar" class="img-thumbnail rounded-circle mb-3" width="150">
                             <br>
                             <a href="{% url 'add_avatar' %}" class="btn btn-warning btn-sm">Change photo</a>
                         {% else %}
-                            <p>User does not have an avatar</p>
+                            <img src="{% static 'default-avatar.png' %}" alt="Default Avatar" class="img-thumbnail rounded-circle mb-3" width="150">
+                            <br>
                             <a href="{% url 'add_avatar' %}" class="btn btn-success btn-sm">Add photo</a>
                         {% endif %}
                         <p>{{ user.bio }}</p>
@@ -51,35 +50,88 @@
         <div class="col-md-8">
             <!-- Posts -->
             {% for post in posts %}
-                <div class="card mb-4">
-                    <div class="card-header d-flex align-items-center">
-                        {% if post.author.avatar and post.author.avatar.url %}
-                            <img src="{{ post.author.avatar.url }}" alt="Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+            <div class="card mb-4" id="post-{{ post.id }}">
+                <div class="card-header d-flex align-items-center">
+                    <!-- Link to Author's Profile -->
+                    {% if post.author == user %}
+                    <a href="{% url 'dashboard' %}" class="d-flex align-items-center text-decoration-none text-dark">
+                        {% if post.author.avatar %}
+                        <img src="{{ post.author.avatar.url }}" alt="Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                         {% else %}
-                            <img src="{% static 'default_avatar.png' %}" alt="Default Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                        <img src="{% static 'default-avatar.png' %}" alt="Default Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                         {% endif %}
                         <strong>{{ post.author.username }}</strong>
-                    </div>
-                    <div class="card-body">
-                        <p>{{ post.description }}</p>
-                        {% if post.images.exists %}
-                            <img src="{{ post.images.first.image.url }}" alt="Post Image" class="img-fluid mb-2">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'djangoinsta:user_profile' post.author.username %}" class="d-flex align-items-center text-decoration-none text-dark">
+                        {% if post.author.avatar %}
+                        <img src="{{ post.author.avatar.url }}" alt="Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                        {% else %}
+                        <img src="{% static 'default-avatar.png' %}" alt="Default Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                         {% endif %}
-                        <div class="mt-2">
-                            <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
-                                {% csrf_token %}
-                                {% if post.is_liked_by_user %}
-                                    <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
-                                {% else %}
-                                    <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
-                                {% endif %}
-                            </form>
-                            <span>{{ post.likes.count }} likes</span>
-                        </div>
+                        <strong>{{ post.author.username }}</strong>
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <p>{{ post.description }}</p>
+                    {% if post.images.exists %}
+                    <img src="{{ post.images.first.image.url }}" alt="Post Image" class="img-fluid mb-2">
+                    {% endif %}
+                    <div class="mt-2">
+                        <form class="like-unlike-form" data-post-id="{{ post.id }}" method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
+                            {% csrf_token %}
+                            {% if post.is_liked_by_user %}
+                            <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                            {% else %}
+                            <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                            {% endif %}
+                        </form>
+                        <span class="like-count">{{ post.likes.count }} likes</span>
                     </div>
                 </div>
+                <div class="card-footer d-flex justify-content-end">
+                    {% if post.author == user %}
+                    <!-- Link to your own post page -->
+                    <a href="{% url 'djangoinsta:confirm_delete_post' post.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
             {% endfor %}
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on('submit', '.like-unlike-form', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const postId = form.data('post-id');
+            const action = form.find('button[type="submit"]').val();
+            const csrftoken = form.find('[name=csrfmiddlewaretoken]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: {
+                    'csrfmiddlewaretoken': csrftoken,
+                    'action': action
+                },
+                success: function(response) {
+                    const post = $('#post-' + postId);
+                    post.find('.like-count').text(response.likes + ' likes');
+                    if (action === 'like') {
+                        form.find('button[type="submit"]').removeClass('btn-primary').addClass('btn-danger').val('unlike').text('Unlike');
+                    } else {
+                        form.find('button[type="submit"]').removeClass('btn-danger').addClass('btn-primary').val('like').text('Like');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error liking/unliking post:', error);
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

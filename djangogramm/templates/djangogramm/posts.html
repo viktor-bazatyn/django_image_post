@@ -1,18 +1,17 @@
 {% load static %}
 {% for post in posts %}
-    <div class="col-md-7 mx-auto post">
+    <div class="col-md-7 mx-auto post" id="post-{{ post.id }}">
         <div class="card mb-4">
             <div class="card-header d-flex align-items-center">
                 {% if post.author.avatar %}
                     <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                 {% else %}
-                    <img src="{% static 'default_avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                    <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                 {% endif %}
-                {% if post.author == user %}
-                    <a href="{% url 'dashboard' %}">{{ post.author.username }}</a>
-                {% else %}
-                    <a href="{% url 'djangoinsta:user_profile' post.author.username %}">{{ post.author.username }}</a>
-                {% endif %}
+                <!-- Unified user profile link style -->
+                <a href="{% if post.author == user %}{% url 'dashboard' %}{% else %}{% url 'djangoinsta:user_profile' post.author.username %}{% endif %}" class="d-flex align-items-center text-decoration-none text-dark">
+                    <strong>{{ post.author.username }}</strong>
+                </a>
             </div>
             <div class="card-body">
                 <p class="card-text"><a href="{% url 'djangoinsta:post_detail' post.id %}">{{ post.description }}</a></p>
@@ -22,17 +21,61 @@
                     </a>
                 {% endif %}
                 <div class="mt-2">
-                    <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
+                    <form class="like-unlike-form" data-post-id="{{ post.id }}" method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
                         {% csrf_token %}
-                        {% if post.is_liked_by_user %}
-                            <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                        {% if user.is_authenticated %}
+                            {% if post.is_liked_by_user %}
+                                <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                            {% else %}
+                                <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                            {% endif %}
                         {% else %}
-                            <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                            <button type="button" class="btn btn-primary login-required">Like</button>
                         {% endif %}
                     </form>
-                    <span>{{ post.likes.count }} likes</span>
+                    <span class="like-count">{{ post.likes.count }} likes</span>
                 </div>
             </div>
         </div>
     </div>
 {% endfor %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Handle click for login-required buttons
+        $(document).on('click', '.login-required', function() {
+            window.location.href = "{% url 'login' %}";
+        });
+
+        // Handle form submission for like/unlike
+        $(document).on('submit', '.like-unlike-form', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const postId = form.data('post-id');
+            const action = form.find('button[type="submit"]').val();
+            const csrftoken = form.find('[name=csrfmiddlewaretoken]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: {
+                    'csrfmiddlewaretoken': csrftoken,
+                    'action': action
+                },
+                success: function(response) {
+                    const post = $('#post-' + postId);
+                    post.find('.like-count').text(response.likes + ' likes');
+                    if (action === 'like') {
+                        form.find('button[type="submit"]').removeClass('btn-primary').addClass('btn-danger').val('unlike').text('Unlike');
+                    } else {
+                        form.find('button[type="submit"]').removeClass('btn-danger').addClass('btn-primary').val('like').text('Like');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error liking/unliking post:', error);
+                }
+            });
+        });
+    });
+</script>

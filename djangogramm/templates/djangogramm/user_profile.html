@@ -1,77 +1,117 @@
 {% extends 'base.html' %}
-
 {% load static %}
-
 {% block content %}
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
     </button>
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <!-- Profile Info -->
-            <div class="card mb-3">
-                <div class="card-body text-center">
-                    {% if user_profile.avatar %}
-                        <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.username }}'s avatar" class="img-thumbnail rounded-circle mb-3" width="150">
-                    {% else %}
-                        <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mb-3" width="150">
-                    {% endif %}
-                    <h2>{{ user_profile.username }}</h2>
-                    {% if user_profile.biography %}
-                        <p>{{ user_profile.biography }}</p>
-                    {% endif %}
-                    {% if user_profile != request.user %}
-                        {% if is_subscribed %}
-                            <a href="{% url 'djangoinsta:unsubscribe' user_profile.username %}" class="btn btn-warning btn-sm">Unsubscribe</a>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Profile Info -->
+                <div class="card mb-3">
+                    <div class="card-body text-center">
+                        {% if user_profile.avatar %}
+                            <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.username }}'s avatar" class="img-thumbnail rounded-circle mb-3" width="150">
                         {% else %}
-                            <a href="{% url 'djangoinsta:subscribe' user_profile.username %}" class="btn btn-success btn-sm">Subscribe</a>
+                            <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mb-3" width="150">
                         {% endif %}
-                    {% endif %}
+                        <h2>{{ user_profile.username }}</h2>
+                        {% if user_profile.biography %}
+                            <p>{{ user_profile.biography }}</p>
+                        {% endif %}
+                        {% if user_profile != request.user %}
+                            {% if is_subscribed %}
+                                <a href="{% url 'djangoinsta:unsubscribe' user_profile.username %}" class="btn btn-warning btn-sm">Unsubscribe</a>
+                            {% else %}
+                                <a href="{% url 'djangoinsta:subscribe' user_profile.username %}" class="btn btn-success btn-sm">Subscribe</a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Profile Stats -->
+                <div class="card mb-3">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <a href="{% url 'djangoinsta:subscribers_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">
+                                    Subscribers
+                                    <p class="mb-0" style="font-size: 0.5rem;">{{ subscriber_count }}</p>
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{% url 'djangoinsta:subscriptions_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">
+                                    Subscriptions
+                                    <p class="mb-0" style="font-size: 0.5rem;">{{ subscription_count }}</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- Profile Stats -->
-            <div class="card mb-3">
-                <div class="card-body text-center">
-                    <div class="d-flex justify-content-around">
-                        <div>
-                            <a href="{% url 'djangoinsta:subscribers_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">Subscribers<p class="mb-0" style="font-size: 0.5rem;">{{ subscriber_count }}</p></a>
+            <div class="col-md-8">
+                <!-- Posts -->
+                {% for post in posts %}
+                    <div class="card mb-4">
+                        <div class="card-header d-flex align-items-center">
+                            {% if post.author.avatar %}
+                                <img src="{{ post.author.avatar.url }}" alt="Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                            {% else %}
+                                <img src="{% static 'default-avatar.png' %}" alt="Default Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                            {% endif %}
+                            <strong>{{ post.author.username }}</strong>
                         </div>
-                        <div>
-                            <a href="{% url 'djangoinsta:subscriptions_list' user_profile.username %}" class="btn btn-success btn-sm" style="padding: 0.5rem 1rem;">Subscriptions<p class="mb-0" style="font-size: 0.5rem;">{{ subscription_count }}</p></a>
+                        <div class="card-body">
+                            <p>{{ post.description }}</p>
+                            {% if post.images.exists %}
+                                <img src="{{ post.images.first.image.url }}" alt="Post Image" class="img-fluid mb-2">
+                            {% endif %}
+                            <div class="mt-2">
+                                <form class="like-unlike-form" data-post-id="{{ post.id }}" method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
+                                    {% csrf_token %}
+                                    {% if post.is_liked_by_user %}
+                                        <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                                    {% else %}
+                                        <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                                    {% endif %}
+                                </form>
+                                <span class="like-count">{{ post.likes.count }} likes</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-        </div>
-        <div class="col-md-8">
-            <!-- Posts -->
-            {% for post in posts %}
-                <div class="card mb-4">
-                    <div class="card-header d-flex align-items-center">
-                        <img src="{{ post.author.avatar.url }}" alt="Author Avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
-                        <strong>{{ post.author.username }}</strong>
-                    </div>
-                    <div class="card-body">
-                        <p>{{ post.description }}</p>
-                        {% if post.images.exists %}
-                            <img src="{{ post.images.first.image.url }}" alt="Post Image" class="img-fluid mb-2">
-                        {% endif %}
-                        <div class="mt-2">
-                            <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
-                                {% csrf_token %}
-                                {% if post.is_liked_by_user %}
-                                    <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
-                                {% else %}
-                                    <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
-                                {% endif %}
-                            </form>
-                            <span>{{ post.likes.count }} likes</span>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
         </div>
     </div>
-</div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(document).on('submit', '.like-unlike-form', function(e) {
+                e.preventDefault();
+                const form = $(this);
+                const postId = form.data('post-id');
+                const action = form.find('button[type="submit"]').val();
+                const csrftoken = form.find('[name=csrfmiddlewaretoken]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: {
+                        'csrfmiddlewaretoken': csrftoken,
+                        'action': action
+                    },
+                    success: function(response) {
+                        form.closest('.card').find('.like-count').text(response.likes + ' likes');
+                        if (action === 'like') {
+                            form.find('button[type="submit"]').removeClass('btn-primary').addClass('btn-danger').val('unlike').text('Unlike');
+                        } else {
+                            form.find('button[type="submit"]').removeClass('btn-danger').addClass('btn-primary').val('like').text('Like');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error liking/unliking post:', error);
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

@@ -129,13 +129,17 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'bazatinviktor@gmail.com'
+EMAIL_HOST_PASSWORD = 'jlli ctxs boct jmwx'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
-EMAIL_HOST = "localhost"
-EMAIL_PORT = 1025
 
 SOCIAL_AUTH_GITHUB_SCOPE = [
     'user:email',

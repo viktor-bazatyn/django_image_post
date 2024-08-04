@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 from djangogramm.forms import PostForm, ImageForm
 from djangogramm.models import Post, Subscriber
 from users.models import CustomUser
@@ -45,21 +48,24 @@ def load_posts(request):
     return HttpResponse('Invalid request', status=400)
 
 
+@csrf_exempt
+@require_POST
 def like_unlike_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     user = request.user
 
     if not user.is_authenticated:
-        return redirect(f'{reverse("login")}?next={request.path}')
+        return JsonResponse({'error': 'User is not authenticated'}, status=403)
 
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'like':
-            post.like(user)
-        elif action == 'unlike':
-            post.unlike(user)
+    action = request.POST.get('action')
+    if action == 'like':
+        post.like(user)
+    elif action == 'unlike':
+        post.unlike(user)
+    else:
+        return JsonResponse({'error': 'Invalid action'}, status=400)
 
-    return redirect(request.META.get('HTTP_REFERER', 'index'))
+    return JsonResponse({'likes': post.likes.count()})
 
 
 def post_detail(request, post_id):
@@ -152,3 +158,18 @@ def unsubscribe(request, username):
     user_to_unsubscribe = get_object_or_404(CustomUser, username=username)
     Subscriber.objects.filter(user=request.user, subscribed_to=user_to_unsubscribe).delete()
     return redirect('djangoinsta:user_profile', username=username)
+
+
+@login_required
+def confirm_delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    return render(request, 'djangogramm/confirm_delete.html', {'post': post})
+
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('dashboard')
+    return redirect('djangoinsta:confirm_delete_post', post_id=post_id)
