@@ -1,18 +1,24 @@
 {% load static %}
 <nav class="navbar navbar-expand-md navbar-light sticky-top" style="background-color: chocolate;">
     <div class="container-fluid">
-        <a href="/djangogramm/" class="navbar-brand"><img src="/static/djangogramm/image/django.png" alt="DjangoGram"></a>
+        <a href="/djangogramm/" class="navbar-brand">
+            <img src="{% static 'djangogramm/image/django.png' %}" alt="DjangoGram">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <li class="nav-item me-2">
+                    <a href="{% url 'djangoinsta:index' %}" class="btn btn-secondary">Posts</a>
+                </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item me-2">
-                    <a href="{% url 'logouts' %}" class="btn btn-primary">Вийти</a>
+                    <a href="{% url 'logouts' %}" class="btn btn-primary">Log out</a>
                 </li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+
