@@ -64,8 +64,6 @@
 <script type="text/javascript">
     $(document).ready(function() {
         let page = 1;
-
-        // AJAX for loading more posts
         $(document).on('click', '#load-more', function() {
             page += 1;
             $.ajax({
@@ -83,8 +81,6 @@
                 }
             });
         });
-
-        // Redirect to login for unauthenticated users
         $(document).on('click', '.login-required', function() {
             window.location.href = "{% url 'login' %}";
         });

@@ -8,7 +8,6 @@
                 {% else %}
                     <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
                 {% endif %}
-                <!-- Unified user profile link style -->
                 <a href="{% if post.author == user %}{% url 'dashboard' %}{% else %}{% url 'djangoinsta:user_profile' post.author.username %}{% endif %}" class="d-flex align-items-center text-decoration-none text-dark">
                     <strong>{{ post.author.username }}</strong>
                 </a>
@@ -43,12 +42,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        // Handle click for login-required buttons
         $(document).on('click', '.login-required', function() {
             window.location.href = "{% url 'login' %}";
         });
-
-        // Handle form submission for like/unlike
         $(document).on('submit', '.like-unlike-form', function(e) {
             e.preventDefault();
             const form = $(this);

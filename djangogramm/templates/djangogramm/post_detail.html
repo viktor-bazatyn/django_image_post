@@ -51,12 +51,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            // Handle click for login-required buttons
             $(document).on('click', '.login-required', function() {
                 window.location.href = "{% url 'login' %}";
             });
-
-            // Handle form submission for like/unlike
             $(document).on('submit', '.like-unlike-form', function(e) {
                 e.preventDefault();
                 const form = $(this);

@@ -92,7 +92,6 @@
                 </div>
                 <div class="card-footer d-flex justify-content-end">
                     {% if post.author == user %}
-                    <!-- Link to your own post page -->
                     <a href="{% url 'djangoinsta:confirm_delete_post' post.id %}" class="btn btn-danger btn-sm">Delete</a>
                     {% endif %}
                 </div>
