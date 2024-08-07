@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
-
 urlpatterns = [
     path('', views.index, name='index'),
+    path('confirm_delete_post/<uuid:post_id>/', views.confirm_delete_post, name='confirm_delete_post'),
+    path('delete_post/<uuid:post_id>/', views.delete_post, name='delete_post'),
+    path('ajax/load_posts/', views.load_posts, name='load_posts'),
     path('post/<uuid:post_id>/', views.post_detail, name='post_detail'),
     path('user/<str:username>/', views.user_profile, name='user_profile'),
     path('user_posts/', views.user_posts, name='user_posts'),
@@ -14,4 +16,3 @@ urlpatterns = [
     path('post/<uuid:post_id>/like_unlike_post/', views.like_unlike_post, name='like_unlike_post'),
 ]
 app_name = 'djangoinsta'
-

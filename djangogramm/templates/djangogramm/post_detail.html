@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
     <div class="container">
         <div class="row justify-content-center">
@@ -7,7 +7,11 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex align-items-center">
                         <!-- Avatar and Username -->
-                        <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                        {% if post.author.avatar %}
+                            <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                        {% else %}
+                            <img src="{% static 'default-avatar.png' %}" alt="Default avatar" class="img-thumbnail rounded-circle mr-2" width="40" height="40">
+                        {% endif %}
                         <h3 class="mb-0">{{ post.author.username }}</h3>
                     </div>
                     <div class="card-body text-center">
@@ -21,16 +25,20 @@
                         {% endfor %}
                         <div class="mt-3">
                             <!-- Like/Unlike Form -->
-                            <form method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}" class="text-center">
+                            <form class="like-unlike-form" data-post-id="{{ post.id }}" method="post" action="{% url 'djangoinsta:like_unlike_post' post.id %}">
                                 {% csrf_token %}
-                                {% if post.is_liked_by_user %}
-                                    <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                                {% if user.is_authenticated %}
+                                    {% if post.is_liked_by_user %}
+                                        <button type="submit" name="action" value="unlike" class="btn btn-danger">Unlike</button>
+                                    {% else %}
+                                        <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                                    {% endif %}
                                 {% else %}
-                                    <button type="submit" name="action" value="like" class="btn btn-primary">Like</button>
+                                    <button type="button" class="btn btn-primary login-required">Like</button>
                                 {% endif %}
                             </form>
                             <!-- Likes Count -->
-                            <div class="mt-2">
+                            <div class="mt-2 like-count">
                                 <span>{{ post.likes.count }} likes</span>
                             </div>
                         </div>
@@ -39,4 +47,44 @@
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(document).on('click', '.login-required', function() {
+                window.location.href = "{% url 'login' %}";
+            });
+            $(document).on('submit', '.like-unlike-form', function(e) {
+                e.preventDefault();
+                const form = $(this);
+                const postId = form.data('post-id');
+                const action = form.find('button[type="submit"]').val();
+                const csrftoken = form.find('[name=csrfmiddlewaretoken]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: {
+                        'csrfmiddlewaretoken': csrftoken,
+                        'action': action
+                    },
+                    success: function(response) {
+                        console.log('Server response:', response);  // For debugging
+                        const likeCountElement = form.closest('.card').find('.like-count span');
+                        likeCountElement.text(response.likes + ' likes');
+
+                        const button = form.find('button[type="submit"]');
+                        if (action === 'like') {
+                            button.removeClass('btn-primary').addClass('btn-danger').val('unlike').text('Unlike');
+                        } else {
+                            button.removeClass('btn-danger').addClass('btn-primary').val('like').text('Like');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error liking/unliking post:', error);
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
